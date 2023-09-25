@@ -14,6 +14,7 @@ function Images({ images }: { images: string[] }) {
             alt={image}
             width="56"
             height={44}
+            key={image}
           />
         ))}
       </div>

@@ -88,6 +88,7 @@ function SearchSidebar({
                   price: price.price,
                 },
               }}
+              key={price.price + price.label}
               className={`text-center border w-full text-reg font-light p-2 ${price.classNames}`}
             >
               {price.label}
