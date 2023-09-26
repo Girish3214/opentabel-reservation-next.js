@@ -1,10 +1,21 @@
 import { NextResponse } from "next/server";
 import validator from "validator";
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt";
 
-
+const prisma = new PrismaClient()
 export async function POST(request: Request) {
   const { firstName, lastName, email, phone, city, password } = await request.json();
 
+  const userWithEmail = await prisma.user.findFirst({
+    where: {
+      email
+    }
+  })
+
+  if (userWithEmail) {
+    return NextResponse.json({ errorMessage: "Email is associated with another account!" })
+  }
   const errors: string[] = []
   const validationSchema = [
     {
@@ -51,5 +62,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ errorMessage: errors[0] })
   }
 
-  return NextResponse.json({ hello: "entered.." });
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const user = await prisma.user.create({
+    data: {
+      first_name: firstName, last_name: lastName, email, phone,
+      city, password: hashedPassword
+    }
+  });
+
+  return NextResponse.json({ hello: user });
 }
