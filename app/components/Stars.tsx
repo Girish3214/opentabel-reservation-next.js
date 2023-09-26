@@ -19,9 +19,9 @@ function Stars({ reviews, rating }: { reviews: Review[]; rating?: number }) {
         else stars.push(FullStar);
       } else stars.push(EmptyStar);
     }
-    return stars.map((star) => {
-      return <Image src={star} alt="" className="w-4 h-4 mr-1" />;
-    });
+    return stars.map((star, i) => (
+      <Image key={i} src={star} alt="" className="w-4 h-4 mr-1" />
+    ));
   };
   return <div className="flex items-center">{renderStars()}</div>;
 }
