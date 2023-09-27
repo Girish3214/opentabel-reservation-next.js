@@ -7,7 +7,6 @@ import * as jose from 'jose'
 const prisma = new PrismaClient()
 export async function POST(request: Request) {
   const { firstName, lastName, email, phone, city, password } = await request.json();
-
   const userWithEmail = await prisma.user.findFirst({
     where: {
       email
