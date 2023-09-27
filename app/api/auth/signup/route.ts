@@ -75,5 +75,5 @@ export async function POST(request: Request) {
   const secret = new TextEncoder().encode(process.env.JWT_SECRET)
   const token = await new jose.SignJWT({ email: user.email }).setProtectedHeader({ alg }).setExpirationTime("24h").sign(secret)
 
-  return NextResponse.json({ hello: token });
+  return NextResponse.json({ token });
 }
