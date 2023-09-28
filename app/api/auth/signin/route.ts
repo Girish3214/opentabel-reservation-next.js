@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     })
 
     if (errors.length) {
-        return NextResponse.json({ errorMessage: errors[0] })
+        return NextResponse.json({ errorMessage: errors[0] }, { status: 401 })
     }
     const userWithEmail = await prisma.user.findUnique({
         where: {
@@ -40,13 +40,13 @@ export async function POST(request: Request) {
         }
     })
     if (!userWithEmail) {
-        return NextResponse.json({ errorMessage: "Email or password is invalid" })
+        return NextResponse.json({ errorMessage: "Email or password is invalid" }, { status: 401 })
     }
 
     const isMatch = bcrypt.compare(password, userWithEmail.password);
 
     if (!isMatch) {
-        return NextResponse.json({ errorMessage: "Email or password is invalid" })
+        return NextResponse.json({ errorMessage: "Email or password is invalid" }, { status: 401 })
     }
 
     const alg = "HS256"

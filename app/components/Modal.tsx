@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import FormInputs from "./FormInputs";
+import useAuth from "@/hooks/useAuth";
 
 const Modal = ({ isSignIn }: { isSignIn: boolean }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,6 +16,7 @@ const Modal = ({ isSignIn }: { isSignIn: boolean }) => {
 
   const [disabled, setDisabled] = useState(true);
 
+  const { signIn } = useAuth();
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -27,6 +29,12 @@ const Modal = ({ isSignIn }: { isSignIn: boolean }) => {
     const name = e.target.name;
     const value = e.target.value;
     setInputs((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = () => {
+    if (isSignIn) {
+      signIn({ email: inputs.email, password: inputs.password });
+    }
   };
 
   useEffect(() => {
@@ -85,6 +93,7 @@ const Modal = ({ isSignIn }: { isSignIn: boolean }) => {
             <button
               disabled={disabled}
               className="uppercase bg-red-600  w-full text-white p-3 rounded text-sm mb-5 disabled:bg-gray-400"
+              onClick={() => handleSubmit()}
             >
               {isSignIn ? "Sign In" : "Create Account"}
             </button>
