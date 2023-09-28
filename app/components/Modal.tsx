@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FormInputs from "./FormInputs";
 
 const Modal = ({ isSignIn }: { isSignIn: boolean }) => {
@@ -12,6 +12,8 @@ const Modal = ({ isSignIn }: { isSignIn: boolean }) => {
     city: "",
     password: "",
   });
+
+  const [disabled, setDisabled] = useState(true);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -26,6 +28,29 @@ const Modal = ({ isSignIn }: { isSignIn: boolean }) => {
     const value = e.target.value;
     setInputs((prev) => ({ ...prev, [name]: value }));
   };
+
+  useEffect(() => {
+    if (isSignIn) {
+      if (inputs.email && inputs.password) {
+        return setDisabled(false);
+      }
+    } else {
+      if (
+        inputs.firstName &&
+        inputs.lastName &&
+        inputs.email &&
+        inputs.password &&
+        inputs.phone &&
+        inputs.city
+      ) {
+        return setDisabled(false);
+      }
+    }
+
+    setDisabled(true);
+    return () => {};
+  }, [inputs]);
+
   return (
     <>
       <button
@@ -57,7 +82,10 @@ const Modal = ({ isSignIn }: { isSignIn: boolean }) => {
               handleInputChange={handleInputChange}
               isSignIn={isSignIn}
             />
-            <button className="uppercase bg-red-600  w-full text-white p-3 rounded text-sm mb-5 disabled:bg-gray-400">
+            <button
+              disabled={disabled}
+              className="uppercase bg-red-600  w-full text-white p-3 rounded text-sm mb-5 disabled:bg-gray-400"
+            >
               {isSignIn ? "Sign In" : "Create Account"}
             </button>
           </div>
