@@ -14,7 +14,7 @@ export async function GET(request: Request) {
     const payload = jwt.decode(token) as { email: string }
 
     if (!payload.email) {
-        return NextResponse.json({ errorMessage: "Unauthorized request" })
+        return NextResponse.json({ errorMessage: "Unauthorized request" }, { status: 401 })
 
     }
     const user = await prisma.user.findUnique({
@@ -30,6 +30,18 @@ export async function GET(request: Request) {
             phone: true,
         }
     })
-    return NextResponse.json({ user })
+
+    if (!user) {
+        return NextResponse.json({ errorMessage: "User not found" }, { status: 401 })
+
+    }
+    return NextResponse.json({
+        id: user.id,
+        firstName: user?.first_name,
+        lastName: user?.last_name,
+        email: user.email,
+        phone: user.phone,
+        city: user.city,
+    })
 
 }

@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import FormInputs from "./FormInputs";
 import useAuth from "@/hooks/useAuth";
+import { useGlobalContext } from "../store/AuthContext";
+import Alert from "./Alert";
 
 const Modal = ({ isSignIn }: { isSignIn: boolean }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,7 +18,9 @@ const Modal = ({ isSignIn }: { isSignIn: boolean }) => {
 
   const [disabled, setDisabled] = useState(true);
 
-  const { signIn } = useAuth();
+  const { signIn, signUp } = useAuth();
+  const { loading, data, error } = useGlobalContext();
+
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -33,7 +37,18 @@ const Modal = ({ isSignIn }: { isSignIn: boolean }) => {
 
   const handleSubmit = () => {
     if (isSignIn) {
-      signIn({ email: inputs.email, password: inputs.password });
+      signIn({ email: inputs.email, password: inputs.password, closeModal });
+    } else {
+      signUp({
+        email: inputs.email,
+        password: inputs.password,
+        firstName: inputs.firstName,
+        lastName: inputs.lastName,
+        phone: inputs.phone,
+        city: inputs.city,
+
+        closeModal,
+      });
     }
   };
 
@@ -80,7 +95,11 @@ const Modal = ({ isSignIn }: { isSignIn: boolean }) => {
           onClick={closeModal}
         ></div>
         <div className="bg-white rounded-lg p-8 z-10">
-          {/* Your modal content */}
+          {error && (
+            <div className="mb-2">
+              <Alert type="error" message={error} />
+            </div>
+          )}
           <h2 className="text-xl font-bold text-center pb-2 border-b mb-4 uppercase ">
             {isSignIn ? "Sign in" : "Create Account"}
           </h2>
@@ -91,11 +110,17 @@ const Modal = ({ isSignIn }: { isSignIn: boolean }) => {
               isSignIn={isSignIn}
             />
             <button
-              disabled={disabled}
+              disabled={loading ? true : disabled}
               className="uppercase bg-red-600  w-full text-white p-3 rounded text-sm mb-5 disabled:bg-gray-400"
               onClick={() => handleSubmit()}
             >
-              {isSignIn ? "Sign In" : "Create Account"}
+              {loading ? (
+                <>loading...</>
+              ) : isSignIn ? (
+                "Sign In"
+              ) : (
+                "Create Account"
+              )}
             </button>
           </div>
           <button
