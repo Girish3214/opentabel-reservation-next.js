@@ -1,4 +1,5 @@
 import { useGlobalContext } from "@/app/store/AuthContext";
+import { removeCookie } from "@/app/utils/getCookies";
 import axios from "axios";
 
 interface SignProps {
@@ -81,8 +82,16 @@ function useAuth() {
         }
     };
 
+    const signOut = () => {
+        removeCookie("jwt");
+        setAuthState((prev) => ({
+            error: null,
+            data: null,
+            loading: false,
+        }));
+    }
 
-    return { signIn, signUp, };
+    return { signIn, signUp, signOut };
 }
 
 export default useAuth;

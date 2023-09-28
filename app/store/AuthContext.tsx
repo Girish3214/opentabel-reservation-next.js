@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import getCookie from "../utils/getCookies";
+import { getCookie } from "../utils/getCookies";
 import axios from "axios";
 
 interface User {
