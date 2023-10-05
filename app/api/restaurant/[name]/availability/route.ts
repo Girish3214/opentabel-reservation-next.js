@@ -77,7 +77,7 @@ export async function GET(request: NextRequest, { params }: any) {
 
     const searchTimesWIthTables = searchTimes.map(searchTime => {
         return {
-            date: new Date(`${day}T${searchTimes}`),
+            date: new Date(`${day}T${searchTime}`),
             time: searchTime,
             tables
         }
@@ -105,5 +105,5 @@ export async function GET(request: NextRequest, { params }: any) {
         const timeBeforeClosing = new Date(`${day}T${availability.time}`) <= new Date(`${day}T${restaurant.close_time}`)
         return timeAfterOpening && timeBeforeClosing
     })
-    return NextResponse.json({ searchTimes, bookingTableObj, tables, searchTimesWIthTables, availabilities })
+    return NextResponse.json(availabilities)
 }

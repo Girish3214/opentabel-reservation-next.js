@@ -64,6 +64,7 @@ async function RestaurantDetailsPage({ params }: { params: { name: string } }) {
         <ReservationCard
           openTime={restaurant.open_time}
           closeTime={restaurant.close_time}
+          name={restaurant.slug}
         />
       </div>
     </>
