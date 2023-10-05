@@ -60,7 +60,9 @@ export async function GET(request: NextRequest, { params }: any) {
             slug: name
         },
         select: {
-            tables: true
+            tables: true,
+            open_time: true,
+            close_time: true
         }
     })
 
@@ -89,5 +91,19 @@ export async function GET(request: NextRequest, { params }: any) {
             return true;
         }
     }))
-    return NextResponse.json({ searchTimes, bookingTableObj, tables, searchTimesWIthTables })
+
+    const availabilities = searchTimesWIthTables.map(t => {
+        const sumSeats = t.tables.reduce((sum, table) => {
+            return sum + table.seats
+        }, 0)
+        return {
+            time: t.time,
+            availabile: sumSeats >= parseInt(partySize)
+        }
+    }).filter(availability => {
+        const timeAfterOpening = new Date(`${day}T${availability.time}`) >= new Date(`${day}T${restaurant.open_time}`)
+        const timeBeforeClosing = new Date(`${day}T${availability.time}`) <= new Date(`${day}T${restaurant.close_time}`)
+        return timeAfterOpening && timeBeforeClosing
+    })
+    return NextResponse.json({ searchTimes, bookingTableObj, tables, searchTimesWIthTables, availabilities })
 }
