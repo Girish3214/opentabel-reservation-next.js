@@ -66,7 +66,24 @@ export async function GET(request: NextRequest, { params }: any) {
                     "No Availability, cannot book"
             }, { status: 400 })
         }
-        return NextResponse.json({ searchTimeWithTables })
+
+        const tablesCount: {
+            2: number[];
+            4: number[];
+        } = {
+            2: [],
+            4: []
+        }
+
+        searchTimeWithTables.tables.forEach(table => {
+            if (table.seats === 2) {
+                tablesCount[2].push(table.id)
+            } else {
+                tablesCount[4].push(table.id)
+            }
+        })
+
+        return NextResponse.json({ tablesCount, searchTimeWithTables })
     }
     return NextResponse.json({ searchTimesWIthTables })
 }
