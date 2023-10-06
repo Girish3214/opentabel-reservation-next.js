@@ -35,15 +35,22 @@ export async function GET(request: NextRequest, { params }: any) {
     if (!restaurant) {
         return NextResponse.json({
             errorMessage:
-                "Invalid data provided"
+                "Restaurant not found"
+        }, { status: 400 })
+    }
+
+    if (new Date(`${day}T${time}`) < new Date(`${day}T${restaurant.open_time}`) ||
+        new Date(`${day}T${time}`) > new Date(`${day}T${restaurant.close_time}`)
+    ) {
+        return NextResponse.json({
+            errorMessage:
+                "Restaurant is on open at this time"
         }, { status: 400 })
     }
 
     const searchTimesWIthTables = await findAvailableTables({
         day, time, restaurant
     })
-
-
 
     if (!searchTimesWIthTables) {
         return NextResponse.json({
@@ -52,19 +59,16 @@ export async function GET(request: NextRequest, { params }: any) {
         }, { status: 400 })
     }
     if (Array.isArray(searchTimesWIthTables)) {
-        const availabilities = searchTimesWIthTables.map(t => {
-            const sumSeats = t.tables.reduce((sum, table) => {
-                return sum + table.seats
-            }, 0)
-            return {
-                time: t.time,
-                availabile: sumSeats >= parseInt(partySize)
-            }
-        }).filter(availability => {
-            const timeAfterOpening = new Date(`${day}T${availability.time}`) >= new Date(`${day}T${restaurant.open_time}`)
-            const timeBeforeClosing = new Date(`${day}T${availability.time}`) <= new Date(`${day}T${restaurant.close_time}`)
-            return timeAfterOpening && timeBeforeClosing
-        })
-        return NextResponse.json(availabilities)
+        const searchTimeWithTables = searchTimesWIthTables.find(t => t.date.toISOString() === new Date(`${day}T${time}`).toISOString())
+        if (!searchTimeWithTables) {
+            return NextResponse.json({
+                errorMessage:
+                    "No Availability, cannot book"
+            }, { status: 400 })
+        }
+        return NextResponse.json({ searchTimeWithTables })
     }
+    return NextResponse.json({ searchTimesWIthTables })
 }
+
+// http://localhost:3000/api/restaurant/vivaan-fine-indian-cuisine-ottawa/reserve?day=2023-02-03&time=01:30:00.000Z&partySize=6
