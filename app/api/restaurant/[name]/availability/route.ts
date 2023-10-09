@@ -44,7 +44,6 @@ export async function GET(request: NextRequest, { params }: any) {
     })
 
 
-
     if (!searchTimesWIthTables) {
         return NextResponse.json({
             errorMessage:

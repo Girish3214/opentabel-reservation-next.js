@@ -8,12 +8,14 @@ type Data = {
 };
 
 export async function GET() {
+  await prisma.bookingsOnTable?.deleteMany();
+  await prisma.booking?.deleteMany();
   await prisma.table.deleteMany();
-  await prisma.review?.deleteMany();
-  await prisma.item?.deleteMany();
   await prisma.restaurant?.deleteMany();
   await prisma.location?.deleteMany();
   await prisma.cuisine?.deleteMany();
+  await prisma.review?.deleteMany();
+  await prisma.item?.deleteMany();
   await prisma.user?.deleteMany();
 
   await prisma.location.createMany({
