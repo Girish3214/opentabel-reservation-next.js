@@ -1,7 +1,19 @@
 "use client";
+import useReservation from "@/hooks/useReservation";
 import React, { useEffect, useState } from "react";
 
-function Form() {
+function Form({
+  name,
+  partySize,
+  date,
+}: {
+  name: string;
+
+  partySize: string;
+  date: string;
+}) {
+  const { error, loading, createReservation } = useReservation();
+  const [day, time] = date.split("T");
   const [inputs, setInputs] = useState({
     booker_first_name: "",
     booker_last_name: "",
@@ -17,6 +29,21 @@ function Form() {
     const name = e.target.name;
     const value = e.target.value;
     setInputs((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async () => {
+    const booking = await createReservation({
+      name,
+      partySize: parseInt(partySize),
+      day,
+      time,
+      booker_first_name: inputs.booker_first_name,
+      booker_last_name: inputs.booker_last_name,
+      booker_phone: inputs.booker_phone,
+      booker_email: inputs.booker_email,
+      booker_occasion: inputs.booker_occasion,
+      booker_request: inputs.booker_request,
+    });
   };
 
   useEffect(() => {
@@ -84,10 +111,11 @@ function Form() {
         onChange={(e) => handleInputChange(e)}
       />
       <button
-        disabled={disabled}
+        disabled={disabled || loading}
+        onClick={() => handleSubmit()}
         className="bg-red-600 w-full p-3 text-white font-bold rounded disabled:bg-gray-300"
       >
-        Complete reservation
+        {loading ? "Loading..." : "Complete reservation"}
       </button>
       <p className="mt-4 text-sm">
         By clicking “Complete reservation” you agree to the OpenTable Terms of

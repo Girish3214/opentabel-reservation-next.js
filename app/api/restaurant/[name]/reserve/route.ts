@@ -8,15 +8,13 @@ const prisma = new PrismaClient();
 export async function POST(request: NextRequest, { params }: any) {
 
     const { booker_email, booker_phone, booker_first_name, booker_last_name, booker_occasion, booker_request } = await request.json();
-    console.log(await request)
-    console.log({ booker_email, booker_phone, booker_first_name, booker_last_name, booker_occasion, booker_request })
+
     const searchParams = request.nextUrl.searchParams
 
     const name = params.name
     const day = searchParams.get("day");
     const time = searchParams.get("time");
     const partySize = searchParams.get("partySize");
-
     if (!day || !time || !partySize) {
         return NextResponse.json({
             errorMessage:
@@ -42,6 +40,7 @@ export async function POST(request: NextRequest, { params }: any) {
                 "Restaurant not found"
         }, { status: 400 })
     }
+
 
     if (new Date(`${day}T${time}`) < new Date(`${day}T${restaurant.open_time}`) ||
         new Date(`${day}T${time}`) > new Date(`${day}T${restaurant.close_time}`)
@@ -89,6 +88,7 @@ export async function POST(request: NextRequest, { params }: any) {
         const tablesToBook: number[] = [];
         let seatsRemaining = parseInt(partySize);
 
+
         while (seatsRemaining > 0) {
             if (seatsRemaining >= 3) {
                 if (tablesCount[4].length) {
@@ -128,13 +128,15 @@ export async function POST(request: NextRequest, { params }: any) {
             }
         })
 
-        const bookimgsOnTableData = tablesToBook.map((tableId => { return { table_id: tableId, booking_id: booking.id } }))
+        const bookimgsOnTableData = tablesToBook.map((tableId) => {
+            return { table_id: tableId, booking_id: booking.id }
+        })
         await prisma.bookingsOnTable.createMany({
             data: bookimgsOnTableData
         })
         return NextResponse.json({ booking })
     }
-    return NextResponse.json({ searchTimesWIthTables })
+
 }
 
 // http://localhost:3000/api/restaurant/vivaan-fine-indian-cuisine-ottawa/reserve?day=2023-02-03&time=01:30:00.000Z&partySize=6

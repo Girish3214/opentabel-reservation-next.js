@@ -4,7 +4,7 @@ import { partySize as partySizesArray, times } from "../../../../data";
 import { useMemo, useState } from "react";
 import useAvailability from "@/hooks/useAvailability";
 import Link from "next/link";
-import { convertToDisplayTime } from "@/app/utils/convertToDisplayTime";
+import { Time, convertToDisplayTime } from "@/app/utils/convertToDisplayTime";
 
 function ReservationCard({
   openTime,
@@ -121,7 +121,7 @@ function ReservationCard({
                   className="bg-red-600 cursor-pointer p-2 w-24 text-center text-white mb-3 rounded mr-3"
                 >
                   <p className="text-sm font-bold">
-                    {convertToDisplayTime(time.time)}
+                    {convertToDisplayTime(time.time as Time)}
                   </p>
                 </Link>
               ) : (

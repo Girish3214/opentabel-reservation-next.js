@@ -39,7 +39,11 @@ async function ReservationPage({
             date={searchParams.date}
             partySize={searchParams.partySize}
           />
-          <Form />
+          <Form
+            name={params.name}
+            date={searchParams.date}
+            partySize={searchParams.partySize}
+          />
         </div>
       </div>
     </>

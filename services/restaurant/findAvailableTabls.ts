@@ -24,6 +24,8 @@ export const findAvailableTables = async ({
         }, { status: 400 })
     }
 
+
+
     const bookings = await prisma.booking.findMany({
         where: {
             booking_time: {
@@ -50,25 +52,25 @@ export const findAvailableTables = async ({
     })
 
 
+    let tables = restaurant.tables;
 
-    const tables = restaurant.tables;
+    let searchTimesWIthTables = searchTimes.map(searchTim => ({
+        date: new Date(`${day}T${searchTim}`),
+        time: searchTim,
+        tables
+    }))
 
-    const searchTimesWIthTables = searchTimes.map(searchTime => {
-        return {
-            date: new Date(`${day}T${searchTime}`),
-            time: searchTime,
-            tables
-        }
-    });
+    searchTimesWIthTables.forEach((tb) => tb.tables = tables)
 
-    searchTimesWIthTables.forEach((t) => t.tables = t.tables.filter(table => {
-        if (bookingTableObj[t.date.toISOString()]) {
-            if (bookingTableObj[t.date.toISOString()][table.id]) {
-                return false
+
+    searchTimesWIthTables.forEach((t) => {
+        t.tables = t.tables.filter(table => {
+            if (bookingTableObj[t.date.toISOString()]) {
+                if (bookingTableObj[t.date.toISOString()][table.id]) return false;
             }
             return true;
-        }
-    }))
+        })
+    })
 
     return searchTimesWIthTables;
 }

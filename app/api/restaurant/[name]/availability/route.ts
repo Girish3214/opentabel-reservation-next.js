@@ -43,7 +43,6 @@ export async function GET(request: NextRequest, { params }: any) {
         day, time, restaurant
     })
 
-
     if (!searchTimesWIthTables) {
         return NextResponse.json({
             errorMessage:
@@ -57,7 +56,7 @@ export async function GET(request: NextRequest, { params }: any) {
             }, 0)
             return {
                 time: t.time,
-                availabile: sumSeats >= parseInt(partySize)
+                available: sumSeats >= parseInt(partySize)
             }
         }).filter(availability => {
             const timeAfterOpening = new Date(`${day}T${availability.time}`) >= new Date(`${day}T${restaurant.open_time}`)
