@@ -5,8 +5,11 @@ import { findAvailableTables } from "@/services/restaurant/findAvailableTabls";
 
 
 const prisma = new PrismaClient();
-export async function GET(request: NextRequest, { params }: any) {
+export async function POST(request: NextRequest, { params }: any) {
 
+    const { booker_email, booker_phone, booker_first_name, booker_last_name, booker_occasion, booker_request } = await request.json();
+    console.log(await request)
+    console.log({ booker_email, booker_phone, booker_first_name, booker_last_name, booker_occasion, booker_request })
     const searchParams = request.nextUrl.searchParams
 
     const name = params.name
@@ -28,7 +31,8 @@ export async function GET(request: NextRequest, { params }: any) {
         select: {
             tables: true,
             open_time: true,
-            close_time: true
+            close_time: true,
+            id: true
         }
     })
 
@@ -82,8 +86,53 @@ export async function GET(request: NextRequest, { params }: any) {
                 tablesCount[4].push(table.id)
             }
         })
+        const tablesToBook: number[] = [];
+        let seatsRemaining = parseInt(partySize);
 
-        return NextResponse.json({ tablesCount, searchTimeWithTables })
+        while (seatsRemaining > 0) {
+            if (seatsRemaining >= 3) {
+                if (tablesCount[4].length) {
+                    tablesToBook.push(tablesCount[4][0]);
+                    tablesCount[4].shift();
+                    seatsRemaining = seatsRemaining - 4;
+                } else {
+                    tablesToBook.push(tablesCount[2][0]);
+                    tablesCount[2].shift();
+                    seatsRemaining = seatsRemaining - 2;
+                }
+            } else {
+                if (tablesCount[2].length) {
+                    tablesToBook.push(tablesCount[2][0]);
+                    tablesCount[2].shift();
+                    seatsRemaining = seatsRemaining - 2;
+                } else {
+                    tablesToBook.push(tablesCount[4][0]);
+                    tablesCount[4].shift();
+                    seatsRemaining = seatsRemaining - 4;
+                }
+
+            }
+        }
+
+        const booking = await prisma.booking.create({
+            data: {
+                number_of_people: parseInt(partySize),
+                booking_time: new Date(`${day}T${time}`),
+                booker_email,
+                booker_first_name,
+                booker_last_name,
+                booker_occasion,
+                booker_phone,
+                booker_request,
+                restaurant_id: restaurant.id
+            }
+        })
+
+        const bookimgsOnTableData = tablesToBook.map((tableId => { return { table_id: tableId, booking_id: booking.id } }))
+        await prisma.bookingsOnTable.createMany({
+            data: bookimgsOnTableData
+        })
+        return NextResponse.json({ booking })
     }
     return NextResponse.json({ searchTimesWIthTables })
 }
