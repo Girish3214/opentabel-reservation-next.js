@@ -16,6 +16,7 @@ export default function useReservation() {
         booker_email,
         booker_occasion,
         booker_request,
+        setDidBooked
     }: {
         name: string;
         partySize: number;
@@ -27,8 +28,10 @@ export default function useReservation() {
         booker_email: string,
         booker_occasion: string,
         booker_request: string,
+        setDidBooked: React.Dispatch<React.SetStateAction<boolean>>
     }) => {
         setLoading(true);
+        setDidBooked(false);
         try {
             const response = await axios.post(
                 `http://localhost:3000/api/restaurant/${name}/reserve`,
@@ -46,6 +49,7 @@ export default function useReservation() {
             }
             );
             setLoading(false);
+            setDidBooked(true)
             return response.data
         } catch (error: any) {
             setLoading(false);
