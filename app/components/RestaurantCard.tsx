@@ -9,7 +9,7 @@ interface Props {
 }
 function RestaurantCard({ restaurant }: Props) {
   return (
-    <div className="w-64 h-72 m-3 rounded overflow-hidden border cursor-pointer">
+    <div className="w-64 h-72 m-3 rounded overflow-hidden border cursor-pointer hover:scale-110 transition ease-in-out delay-150">
       <Link href={`/restaurant/${restaurant.slug}`}>
         <img src={restaurant.main_image} alt="" className="w-full h-36" />
         <div className="p-1">
